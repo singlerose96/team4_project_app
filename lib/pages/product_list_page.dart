@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // 🟣 로컬 저장소
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product_item.dart';
 import '../widgets/product_list_card.dart';
+import '../widgets/product_info_box.dart';
 
 class ProductListPage extends StatefulWidget {
   const ProductListPage({Key? key}) : super(key: key);
@@ -11,25 +12,24 @@ class ProductListPage extends StatefulWidget {
 }
 
 class _ProductListPageState extends State<ProductListPage> {
-  final ScrollController _scrollController = ScrollController(); // 🟣 스크롤 컨트롤러
-  final List<ProductItem> _allItems = [];     // 🟣 전체 상품 데이터
-  final List<ProductItem> _displayItems = []; // 🟣 화면에 보이는 상품
-  bool _isLoading = false;                    // 🟣 로딩 플래그
-  bool _allLoaded = false;                    // 🟣 모두 로드 완료 여부
-  int _nextPage = 0;                          // 🟣 다음 페이지 인덱스
-  static const int _pageSize = 10;            // 🟣 페이지당 아이템 수
+  final ScrollController _scrollController = ScrollController();
+  final List<ProductItem> _allItems = [];
+  final List<ProductItem> _displayItems = [];
+  bool _isLoading = false, _allLoaded = false;
+  int _nextPage = 0;
+  static const int _pageSize = 10;
 
   @override
   void initState() {
     super.initState();
-    _initData();                               // 🟣 초기 데이터 로드
-    _scrollController.addListener(_onScroll);  // 🟣 스크롤 리스너
+    _initData();
+    _scrollController.addListener(_onScroll);
   }
 
   Future<void> _initData() async {
-    _loadAllItems();                           // 🟣 샘플 데이터 생성
-    await _loadFavorites();                    // 🟣 찜 상태 불러오기
-    _loadMore();                               // 🟣 첫 페이지 로드
+    _loadAllItems();
+    await _loadFavorites();
+    _loadMore();
   }
 
   void _loadAllItems() {
@@ -43,11 +43,11 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   Future<void> _loadFavorites() async {
-    final prefs = await SharedPreferences.getInstance();          // 🟣 prefs
-    final favList = prefs.getStringList('favorites') ?? [];      // 🟣 저장된 이름 리스트
+    final prefs = await SharedPreferences.getInstance();
+    final favList = prefs.getStringList('favorites') ?? [];
     setState(() {
       for (var item in _allItems) {
-        item.isLove = favList.contains(item.name);               // 🟣 상태 적용
+        item.isLove = favList.contains(item.name);
       }
     });
   }
@@ -57,113 +57,142 @@ class _ProductListPageState extends State<ProductListPage> {
             _scrollController.position.maxScrollExtent - 200 &&
         !_isLoading &&
         !_allLoaded) {
-      _loadMore(); // 🟣 다음 페이지 로드
+      _loadMore();
     }
   }
 
   Future<void> _loadMore() async {
-    setState(() => _isLoading = true);             // 🟣 로딩 시작
+    setState(() => _isLoading = true);
     final start = _nextPage * _pageSize;
     final end = (start + _pageSize).clamp(0, _allItems.length);
-    final newItems = _allItems.sublist(start, end);
-    if (newItems.isNotEmpty) {
-      setState(() => _displayItems.addAll(newItems)); // 🟣 화면에 추가
+    final slice = _allItems.sublist(start, end);
+    if (slice.isNotEmpty) {
+      setState(() => _displayItems.addAll(slice));
       _nextPage++;
     }
     if (_displayItems.length >= _allItems.length) {
-      _allLoaded = true;                           // 🟣 모두 로드 완료
+      _allLoaded = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('상품을 모두 보았습니다.'),
             duration: Duration(seconds: 1),
-          ),                                         // 🟣 스낵바
+          ),
         );
       });
     }
-    setState(() => _isLoading = false);            // 🟣 로딩 끝
+    setState(() => _isLoading = false);
   }
 
   Future<void> _toggleFavorite(ProductItem item) async {
-    setState(() {
-      item.isLove = !item.isLove;                  // 🟣 토글
-    });
+    setState(() => item.isLove = !item.isLove);
     final prefs = await SharedPreferences.getInstance();
-    final favNames = _allItems.where((e) => e.isLove).map((e) => e.name).toList();
-    await prefs.setStringList('favorites', favNames); // 🟣 저장
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();                  // 🟣 컨트롤러 해제
-    super.dispose();
+    await prefs.setStringList(
+      'favorites',
+      _allItems.where((e) => e.isLove).map((e) => e.name).toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // 로드된 상품이 없으면 로딩 표시
+    if (_displayItems.isEmpty) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // ListView를 사용해, 한 줄에 두 개씩 Row 배치
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,             // 🟢 헤더 배경
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: Image.asset('assets/logo.png', height: 40), // 🟢 로고
+        title: Image.asset('assets/logo.png', height: 40),
         actions: [
           IconButton(
-            icon: Image.asset('assets/icons/search.png', width: 24, height: 24), // 🟢 검색
-            onPressed: () => Navigator.pushNamed(context, '/item_search_page'),   // 🟣 이동
+            icon: Image.asset('assets/icons/search.png', width: 24, height: 24),
+            onPressed: () => Navigator.pushNamed(context, '/item_search_page'),
           ),
           Stack(
             children: [
               IconButton(
-                icon: Image.asset('assets/icons/cart.png', width: 24, height: 24), // 🟢 장바구니
-                onPressed: () => Navigator.pushNamed(context, '/my_cart_page'),     // 🟣 이동
+                icon: Image.asset('assets/icons/cart.png', width: 24, height: 24),
+                onPressed: () => Navigator.pushNamed(context, '/my_cart_page'),
               ),
               if (_allItems.any((e) => e.isLove))
-                Positioned(
+                const Positioned(
                   right: 8,
                   top: 8,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ), // 🟢 배지
-                  ),
+                  child: CircleAvatar(radius: 5, backgroundColor: Colors.red),
                 ),
             ],
           ),
         ],
       ),
-      body: GridView.builder(
-        controller: _scrollController,             // 🟣 페이징
-        padding: const EdgeInsets.all(8),           // 🟢 패딩
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,                        // 🟢 2열
-          childAspectRatio: 0.75,                   // 🟢 카드 비율
-          crossAxisSpacing: 8,                      // 🟢 열 간격
-          mainAxisSpacing: 8,                       // 🟢 행 간격
-        ),
-        itemCount: _displayItems.length,           // 🟣 로드된 수
-        itemBuilder: (context, index) {
-          final item = _displayItems[index];
-          return ProductListCard(
-            item: item,
-            onFavoriteToggle: () => _toggleFavorite(item), // 🟣 토글
+      body: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(8),
+        itemCount: (_displayItems.length / 2).ceil(),
+        itemBuilder: (context, rowIndex) {
+          // 각 Row마다 좌/우 아이템을 할당
+          final left = _displayItems[rowIndex * 2];
+          final rightIndex = rowIndex * 2 + 1;
+          final hasRight = rightIndex < _displayItems.length;
+          final right =
+              hasRight ? _displayItems[rightIndex] : null;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 좌측 카드+정보
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      ProductListCard(
+                        item: left,
+                        onFavoriteToggle: () => _toggleFavorite(left),
+                      ),
+                      const SizedBox(height: 8),
+                      ProductInfoBox(
+                        name: left.name,
+                        price: left.price,
+                      ),
+                    ],
+                  ),
+                ),
+                if (hasRight) ...[
+                  const SizedBox(width: 8),
+                  // 우측 카드+정보
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        ProductListCard(
+                          item: right!,
+                          onFavoriteToggle: () => _toggleFavorite(right),
+                        ),
+                        const SizedBox(height: 8),
+                        ProductInfoBox(
+                          name: right.name,
+                          price: right.price,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
           );
         },
       ),
       floatingActionButton: GestureDetector(
-  onTap: () => Navigator.pushNamed(context, '/item_add_page'),    // 🟣 이동 로직
-  child: Image.asset(
-    'assets/icons/add.png',
-    width: 66,                         // 🟢 원하는 크기로 조정
-    height: 66,
-  ),
-),
-
+        onTap: () => Navigator.pushNamed(context, '/item_add_page'),
+        child: Image.asset('assets/icons/add.png', width: 66, height: 66),
+      ),
     );
-         
-        
   }
 }
