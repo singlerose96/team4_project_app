@@ -58,11 +58,10 @@ flutter:
     - assets/logo.png
     - assets/icons/cart.png
     - assets/icons/search.png
+    - assets/icons/add.png
     - assets/icons/heart_filled.png
     - assets/icons/heart_outline.png
-    - assets/icons/add.png
-    - assets/placeholders/poster_placeholder.png
-
+    - assets/placeholders/placeholder.png 
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

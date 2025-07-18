@@ -11,7 +11,7 @@ class ProductInfoBox extends StatelessWidget {
     required this.price,
   }) : super(key: key);
 
-  String get _formattedPrice {
+  String get formattedPrice {
     if (price == 0) return 'FREE PRIZE';
     // 🟢 천 단위 콤마 포맷팅
     return '₩' +
@@ -21,42 +21,48 @@ class ProductInfoBox extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      // 🟢 고정 크기, 배경색, 아래쪽만 둥근 모서리 radius 12
-      width: 186,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(12),
-          bottomRight: Radius.circular(12),
+Widget build(BuildContext context) {
+  return Container(
+    width: 188,  // 🟢 고정 너비
+    height: 68,  // 🟢 고정 높이
+    decoration: BoxDecoration(
+      color: const Color(0xFFF6F6F6),           // 🟢 배경색 #F6F6F6
+      borderRadius: BorderRadius.circular(12),   // 🟢 모든 모서리 반경 12
+    ),
+    padding: const EdgeInsets.symmetric(
+      horizontal: 12,  // 🟢 좌우 패딩
+      vertical: 8,     // 🟢 상하 패딩
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,   // 🟢 왼쪽 정렬
+      mainAxisAlignment: MainAxisAlignment.center,    // 🟢 세로 중앙 정렬
+      children: [
+        Text(
+          name,  // 🟢 상품 이름
+          style: const TextStyle(
+            fontSize: 16, 
+            fontWeight: FontWeight.bold,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              name, // 🟢 상품 이름
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+        const SizedBox(height: 4),  // 🟢 텍스트 간 간격
+        Text(
+          price == 0
+              ? 'FREE PRIZE'  // 🟢 가격이 0이면 FREE PRIZE
+              : '₩${price.toString().replaceAllMapped( // 🟢 천 단위 콤마 포맷
+                  RegExp(r'\B(?=(\d{3})+(?!\d))'), 
+                  (m) => ','
+                )}',
+          style: TextStyle(
+            fontSize: 14, 
+            fontWeight: FontWeight.bold,
+            color: price == 0 ? Colors.red : Colors.black, // 🟢 0원은 빨강, 그 외 검정
           ),
-          Text(
-            _formattedPrice, // 🟢 포맷된 가격
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: price == 0 ? Colors.red : Colors.black, // 🟢 0원은 빨강
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 }
