@@ -155,16 +155,10 @@ class _ProductListPageState extends State<ProductListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/item_add_page'), // 🟣 이동
-        backgroundColor: Colors.white,            // 🟢 배경
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.green, width: 2), // 🟢 테두리
-          ),
-          padding: const EdgeInsets.all(6),      // 🟢 패딩
-          child: Image.asset('assets/icons/add.png', width: 24, height: 24), // 🟢 +
+          child: Image.asset('assets/icons/add.png', width: 120, height: 120), // 🟢 +
         ),
-      ),
     );
+         
+        
   }
 }
