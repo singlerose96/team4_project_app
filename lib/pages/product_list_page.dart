@@ -153,10 +153,15 @@ class _ProductListPageState extends State<ProductListPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/item_add_page'), // 🟣 이동
-          child: Image.asset('assets/icons/add.png', width: 120, height: 120), // 🟢 +
-        ),
+      floatingActionButton: GestureDetector(
+  onTap: () => Navigator.pushNamed(context, '/item_add_page'),    // 🟣 이동 로직
+  child: Image.asset(
+    'assets/icons/add.png',
+    width: 66,                         // 🟢 원하는 크기로 조정
+    height: 66,
+  ),
+),
+
     );
          
         
