@@ -37,18 +37,17 @@ class ProductListCard extends StatelessWidget {
           ]),
 
             Positioned(
-              bottom: 10, // 🟢 하단 정보 박스 위에 배치 (276 - 60 - 6 padding)
-              right: 10,
+              bottom: 20, // 🟢 위젯박스 위에 배치 
+              right: 20,
               child: GestureDetector(
                 onTap: onFavoriteToggle, // 🟣 찜 토글 콜백
                 child: Container(
-                  // 🟢 하트 버튼
+                  // 🟢 하트 버튼: 초록 테두리 + 흰 배경
                   child: Image.asset(
                     item.isLove
                         ? 'assets/icons/heart_filled.png'
                         : 'assets/icons/heart_outline.png', // 🟢 찜 상태에 따라 아이콘 변경
-                    width: 50,
-                    height: 50,
+                
                   ),
                 ),
               ),
