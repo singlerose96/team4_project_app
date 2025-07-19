@@ -86,7 +86,7 @@ class _ProductListPageState extends State<ProductListPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('상품을 모두 보았습니다.'),
+            content: Text('마지막 상품입니다.'),
             duration: Duration(seconds: 1),
           ),
         );
@@ -145,14 +145,14 @@ class _ProductListPageState extends State<ProductListPage> {
               children: [
                 IconButton(
                   icon: Image.asset('assets/icons/cart.png',
-                      width: 30, height: 24),
+                      width: 30, height: 24), //장바구니 아이콘 사이즈
                   onPressed: () =>
                       Navigator.pushNamed(context, '/my_cart_page'),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 10), //아이콘 사이 거리
                 IconButton(
                   icon: Image.asset('assets/icons/search.png',
-                      width: 23, height: 23),
+                      width: 23, height: 23), //돋보기 아이콘 사이즈
                   onPressed: () =>
                       Navigator.pushNamed(context, '/item_search_page'),
                 ),
