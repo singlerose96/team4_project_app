@@ -138,15 +138,6 @@ class _ProductListPageState extends State<ProductListPage> {
                 icon: Image.asset('assets/icons/cart.png', width: 24, height: 24), // 🟢 장바구니 아이콘
                 onPressed: () => Navigator.pushNamed(context, '/my_cart_page'),
               ),
-              if (_allItems.any((e) => e.isLove))
-                const Positioned(
-                  right: 8,
-                  top: 8,
-                  child: CircleAvatar(
-                    radius: 5,
-                    backgroundColor: Colors.red, // 🟢 찜 배지
-                  ),
-                ),
             ],
           ),
         ],
