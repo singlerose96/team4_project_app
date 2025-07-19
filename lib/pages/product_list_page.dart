@@ -120,87 +120,107 @@ class _ProductListPageState extends State<ProductListPage> {
       );
     }
 
-    // 🟢 상품 2개를 한 행(Row)에 배치하기 위한 ListView
+    // 🟢 상품 2개를 한 행(Row)에 배치한 ListView
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFFFF), // 🟢 헤더 배경 흰색
-        elevation: 0,
-        centerTitle: true,
-        title: Image.asset('assets/logo.png', height: 40), // 🟢 중앙 로고
-        actions: [
-          IconButton(
-            icon: Image.asset('assets/icons/search.png', width: 24, height: 24), // 🟢 검색 아이콘
-            onPressed: () => Navigator.pushNamed(context, '/item_search_page'),
+      backgroundColor: Colors.white, // 페이지 배경색
+      body: Column(
+        children: [
+          // AppBar 없이 로고만 담긴 상단 박스
+          Container(
+            color: Colors.white, // 박스 배경색
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Center(
+              child: Transform.translate( // 로고 위치조정         
+                 offset: const Offset(0, 30),
+              child: Image.asset('assets/logo.png', height: 40), // 로고만 표시
+            ),
           ),
-          Stack(
-            children: [
-              IconButton(
-                icon: Image.asset('assets/icons/cart.png', width: 24, height: 24), // 🟢 장바구니 아이콘
-                onPressed: () => Navigator.pushNamed(context, '/my_cart_page'),
-              ),
-            ],
+          ),
+          // 로고 아래에 search & cart 아이콘
+          Container(
+            color: Colors.white, // 동일 배경
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Image.asset('assets/icons/cart.png',
+                      width: 30, height: 24),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/my_cart_page'),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: Image.asset('assets/icons/search.png',
+                      width: 23, height: 23),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/item_search_page'),
+                ),
+              ],
+            ),
+          ),
+          // 🟣 ListView.builder 를 Expanded로 감싸서 배치
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(8), // 🟢 전체 패딩
+              itemCount: (_displayItems.length / 2).ceil(),
+              itemBuilder: (context, rowIndex) {
+                final left = _displayItems[rowIndex * 2];
+                final rightIndex = rowIndex * 2 + 1;
+                final hasRight = rightIndex < _displayItems.length;
+                final right = hasRight ? _displayItems[rightIndex] : null;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            ProductListCard(
+                              item: left,
+                              onFavoriteToggle: () => _toggleFavorite(left),
+                            ),
+                            const SizedBox(height: 8), // 🟢 카드와 박스 사이 간격
+                            ProductInfoBox(
+                              name: left.name,
+                              price: left.price,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (hasRight) ...[
+                        const SizedBox(width: 8), // 🟢 좌우 간격
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              ProductListCard(
+                                item: right!,
+                                onFavoriteToggle: () => _toggleFavorite(right),
+                              ),
+                              const SizedBox(height: 8),
+                              ProductInfoBox(
+                                name: right.name,
+                                price: right.price,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
-      body: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(8),                 // 🟢 전체 패딩
-        itemCount: (_displayItems.length / 2).ceil(),     // 🟣 두 개씩 배치하므로 행 수 계산
-        itemBuilder: (context, rowIndex) {
-          final left = _displayItems[rowIndex * 2];       // 🟣 왼쪽 아이템
-          final rightIndex = rowIndex * 2 + 1;
-          final hasRight = rightIndex < _displayItems.length;
-          final right = hasRight ? _displayItems[rightIndex] : null; // 🟣 오른쪽 아이템 유무
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20), // 🟢 행 간 세로 간격
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🟢 왼쪽 컬럼: 카드 + 정보 박스
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      ProductListCard(
-                        item: left,
-                        onFavoriteToggle: () => _toggleFavorite(left), // 🟣 찜 토글
-                      ),
-                      const SizedBox(height: 8),                     // 🟢 카드와 박스 사이 간격
-                      ProductInfoBox(
-                        name: left.name,
-                        price: left.price,
-                      ),
-                    ],
-                  ),
-                ),
-                if (hasRight) ...[
-                  const SizedBox(width: 8),                       // 🟢 좌우 간격
-                  // 🟢 오른쪽 컬럼: 카드 + 정보 박스
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                        ProductListCard(
-                          item: right!,
-                          onFavoriteToggle: () => _toggleFavorite(right),
-                        ),
-                        const SizedBox(height: 8),
-                        ProductInfoBox(
-                          name: right.name,
-                          price: right.price,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
       floatingActionButton: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/item_add_page'), // 🟣 아이템 추가 페이지 이동
+        onTap: () => Navigator.pushNamed(context, '/item_add_page'),
         child: Image.asset(
           'assets/icons/add.png', // 🟢 플로팅 + 아이콘
           width: 66,

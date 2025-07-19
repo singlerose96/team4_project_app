@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pocket Poster',                   // 🟢 앱 타이틀
+             debugShowCheckedModeBanner: false, // 🟢 디버그 배너 제거           
       theme: ThemeData(
         primarySwatch: Colors.green,            // 🟢 기본 테마색
       ),
