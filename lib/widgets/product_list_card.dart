@@ -31,14 +31,21 @@ class ProductListCard extends StatelessWidget {
                   image: AssetImage(item.imagePath),       // 🟡 에셋 이미지를 전체 채움
                   fit: BoxFit.cover,                       // 🟡 비율 유지하며 꽉 채우기
                 ),
+
+
+
+
+
+
+                
               ),
             ),
           ),
 
           // 🟡 찜(하트) 아이콘: 이미지 위에 오버레이
           Positioned(
-            bottom: 20,  // 🟢 하단 공간에서 8px 위쪽
-            right: 20,   // 🟢 우측 공간에서 8px 왼쪽
+            bottom: 20,  // 🟢 하단 공간에서 20px 위쪽
+            right: 20,   // 🟢 우측 공간에서 20px 왼쪽
             child: GestureDetector(
               onTap: onFavoriteToggle,                 // 🟣 찜 토글 콜백
               child: Image.asset(

@@ -2,6 +2,7 @@ import 'dart:convert';                                 // 🟦 AssetManifest 파
 import 'package:flutter/services.dart';               // 🟦 rootBundle 사용
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // 🟣 SharedPreferences: 찜 상태 로컬 저장용
+import 'package:team4_project_app/models/poster_data_list.dart';
 import '../models/poster.dart';                       // 🟣 데이터 모델 정의
 import '../widgets/product_list_card.dart';           // 🟢 카드 UI 위젯
 import '../widgets/product_info_box.dart';            // 🟢 하단 정보 박스 위젯
@@ -15,7 +16,7 @@ class ProductListPage extends StatefulWidget {
 
 class _ProductListPageState extends State<ProductListPage> {
   final ScrollController _scrollController = ScrollController();
-  final List<Poster> _displayItems = [];              // 🟢 화면에 표시 중인 상품 데이터
+  List<Poster> _displayItems = [];              // 🟢 화면에 표시 중인 상품 데이터
   final Set<String> _favoriteNames = {};              // 🟦 찜한 상품 이름 집합
   bool _isLoading = false, _allLoaded = false;        // 🟢 로딩 상태, 모두 로드 여부
   int _nextPage = 0;                                  // 🟢 다음 페이지 인덱스
@@ -75,13 +76,8 @@ class _ProductListPageState extends State<ProductListPage> {
       );
       for (var idx = 0; idx < slice.length; idx++) {
         final i = start + idx + 1;
-        _displayItems.add(Poster(
-          name: 'Animal Poster $i',
-          price: i % 5 == 0 ? 0 : 10000 + i * 3000,
-          description: '간단 설명',
-          imagePath: slice[idx],                   // 🟦 루트 번들에서 가져온 경로 사용
-          date: DateTime.now(),
-        )..isFavorite = _favoriteNames.contains('Animal Poster $i'));
+       
+        _displayItems.add(posterDataList[i]..isFavorite = _favoriteNames.contains(posterDataList[i].name));
       }
       _nextPage++;
       if (_displayItems.length >= _allImagePaths.length) {
